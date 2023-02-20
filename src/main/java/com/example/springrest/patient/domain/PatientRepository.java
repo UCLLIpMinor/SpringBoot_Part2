@@ -1,4 +1,4 @@
-package com.example.springrest;
+package com.example.springrest.patient.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

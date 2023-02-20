@@ -1,4 +1,4 @@
-package com.example.springrest;
+package com.example.springrest.generic;
 
 public class ServiceException extends RuntimeException {
 

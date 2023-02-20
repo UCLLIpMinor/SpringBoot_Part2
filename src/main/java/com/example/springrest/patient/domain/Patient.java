@@ -1,40 +1,27 @@
-package com.example.springrest;
+package com.example.springrest.patient.domain;
 
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "patient")
+@Table(name = "my_patient")
 public class Patient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @NotBlank(message = "name.missing")
+    @Column(name = "my_name")
     private String name;
 
-    @NotBlank(message = "email.missing")
-    @Email(message = "email.not.valid")
     private String email;
-
 
     private int age;
 
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -52,5 +39,13 @@ public class Patient {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 }

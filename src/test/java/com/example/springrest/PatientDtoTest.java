@@ -1,30 +1,32 @@
 package com.example.springrest;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import com.example.springrest.patient.web.PatientDto;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PatientTest {
+
+public class PatientDtoTest {
 
     private static ValidatorFactory validatorFactory;
     private static Validator validator;
 
-    @BeforeClass
+    @BeforeAll
     public static void createValidator() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();
     }
 
-    @AfterClass
+    @AfterAll
     public static void close() {
         validatorFactory.close();
     }
@@ -32,10 +34,10 @@ public class PatientTest {
     @Test
     public void givenValidPatient_shouldHaveNoViolations() {
         //given
-        Patient elke = PatientBuilder.aPatientElke().build();
+        PatientDto elke = PatientDtoBuilder.aPatientElke().build();
 
         //when
-        Set<ConstraintViolation<Patient>> violations = validator.validate(elke);
+        Set<ConstraintViolation<PatientDto>> violations = validator.validate(elke);
 
         //then
         assertTrue(violations.isEmpty());
@@ -44,14 +46,14 @@ public class PatientTest {
     @Test
     public void givenPatientWithEmptyName_shouldDetectInvalidNameError() {
         //given
-        Patient johan = PatientBuilder.anInvalidPatientWithNoName().build();
+        PatientDto johan = PatientDtoBuilder.anInvalidPatientWithNoName().build();
 
         //when
-        Set<ConstraintViolation<Patient>> violations = validator.validate(johan);
+        Set<ConstraintViolation<PatientDto>> violations = validator.validate(johan);
 
         //then
         assertEquals(violations.size(), 1);
-        ConstraintViolation<Patient> violation = violations.iterator().next();
+        ConstraintViolation<PatientDto> violation = violations.iterator().next();
         assertEquals("name.missing", violation.getMessage());
         assertEquals("name", violation.getPropertyPath().toString());
         assertEquals("", violation.getInvalidValue());

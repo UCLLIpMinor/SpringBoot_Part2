@@ -1,16 +1,21 @@
 package com.example.springrest;
 
+import com.example.springrest.patient.domain.Patient;
+import com.example.springrest.patient.domain.PatientService;
+import com.example.springrest.patient.web.PatientDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.core.Is;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,19 +26,22 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
-@RunWith(SpringRunner.class)
-// @WebMvcTest also auto-configures MockMvc
-// which offers a powerful way of easy testing MVC controllers without starting a full HTTP server
-@WebMvcTest(PatientRestController.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.MOCK,
+        classes = SpringBasicsApplication.class)
+@AutoConfigureMockMvc
 public class PatientRestControllerTest {
 
     // For creating JSONs from objects
-    ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = new ObjectMapper();
 
     // We use @MockBean to create and inject a mock for the service
     @MockBean
-    PatientService service;
+    private PatientService service;
+
+    @Autowired
+    private WebApplicationContext context;
 
     // To not start the server at all but to test only the layer below that,
     // where Spring handles the incoming HTTP request and hands it off to your controller.
@@ -44,13 +52,18 @@ public class PatientRestControllerTest {
     @Autowired
     MockMvc patientRestController;
 
-    Patient elke, greetje, johan;
+    private Patient elke, greetje, johan;
+    private PatientDto elkeDto, greetjeDto, johanDto;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         elke = PatientBuilder.aPatientElke().build();
         greetje = PatientBuilder.aPatientGreetje().build();
         johan = PatientBuilder.anInvalidPatientWithNoName().build();
+
+        elkeDto = PatientDtoBuilder.aPatientElke().build();
+        greetjeDto = PatientDtoBuilder.aPatientGreetje().build();
+        johanDto = PatientDtoBuilder.anInvalidPatientWithNoName().build();
     }
 
     @Test
@@ -59,15 +72,15 @@ public class PatientRestControllerTest {
         List<Patient> patients = Arrays.asList(elke, greetje);
 
         // mocking
-        given(service.findAllPatients()).willReturn(patients);
+        given(service.getPatients()).willReturn(patients);
 
         // when
         patientRestController.perform(get("/api/patient/all")
                 .contentType(MediaType.APPLICATION_JSON))
                 // then
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name", Is.is(elke.getName())))
-                .andExpect(jsonPath("$[1].name", Is.is(greetje.getName())));
+                .andExpect(jsonPath("$[0].name", Is.is(elkeDto.getName())))
+                .andExpect(jsonPath("$[1].name", Is.is(greetjeDto.getName())));
     }
 
     @Test
@@ -76,17 +89,17 @@ public class PatientRestControllerTest {
         List<Patient> patients = Arrays.asList(elke);
 
         // mocking
-        when(service.addPatient(elke)).thenReturn(elke);
-        when(service.findAllPatients()).thenReturn(patients);
+        when(service.createPatient(elkeDto)).thenReturn(elke);
+        when(service.getPatients()).thenReturn(patients);
 
         // when
         patientRestController.perform(post("/api/patient/add")
-                .content(mapper.writeValueAsString(elke))
+                .content(mapper.writeValueAsString(elkeDto))
                 .contentType(MediaType.APPLICATION_JSON))
                 // then
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].name", Is.is(elke.getName())));
+                .andExpect(jsonPath("$[0].name", Is.is(elkeDto.getName())));
     }
 
     @Test
@@ -95,12 +108,11 @@ public class PatientRestControllerTest {
 
         // when
         patientRestController.perform(post("/api/patient/add")
-                .content(mapper.writeValueAsString(johan))
+                .content(mapper.writeValueAsString(johanDto))
                 .contentType(MediaType.APPLICATION_JSON))
                 // then
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name", Is.is("name.missing")));
     }
-
 }

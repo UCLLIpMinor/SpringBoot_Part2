@@ -1,53 +1,53 @@
 package com.example.springrest;
 
-import com.example.springrest.patient.domain.Patient;
+import com.example.springrest.patient.web.PatientDto;
 
-public class PatientBuilder {
+public class PatientDtoBuilder {
 
     private String name;
     private String email;
     private int age;
 
-    private PatientBuilder() {
+    private PatientDtoBuilder() {
     }
 
-    public static PatientBuilder aPatient () {
-        return new PatientBuilder();
+    public static PatientDtoBuilder aPatient () {
+        return new PatientDtoBuilder();
     }
 
-    public static PatientBuilder aPatientElke() {
+    public static PatientDtoBuilder aPatientElke() {
         return aPatient().withName("Elke").withEmail("Elke@ucll.be").withAge(43);
     }
 
-    public static PatientBuilder anInvalidPatientWithNoName() {
+    public static PatientDtoBuilder anInvalidPatientWithNoName() {
         return aPatient().withName("").withEmail("Johan@ucll.be").withAge(65);
     }
 
-    public static PatientBuilder aPatientGreetje() {
+    public static PatientDtoBuilder aPatientGreetje() {
         return aPatient().withName("Greetje").withEmail("Greetje@ucll.be").withAge(47);
     }
 
-    public static PatientBuilder aPatientMiyo() {
+    public static PatientDtoBuilder aPatientMiyo() {
         return aPatient().withName("Miyo").withEmail("Miyo@ucll.be").withAge(14);
     }
 
-    public PatientBuilder withName (String name) {
+    public PatientDtoBuilder withName (String name) {
         this.name = name;
         return this;
     }
 
-    public PatientBuilder withEmail (String email) {
+    public PatientDtoBuilder withEmail (String email) {
         this.email = email;
         return this;
     }
 
-    public PatientBuilder withAge (int age) {
+    public PatientDtoBuilder withAge (int age) {
         this.age = age;
         return this;
     }
 
-    public Patient build() {
-        Patient patient = new Patient();
+    public PatientDto build() {
+        PatientDto patient = new PatientDto();
         patient.setName(name);
         patient.setEmail(email);
         patient.setAge(age);
