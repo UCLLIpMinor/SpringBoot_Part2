@@ -12,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -40,7 +42,9 @@ public class SecurityConfig {
 
     @Bean // Turn off security for certain URLs
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/css/**", "/console/**", "/api/**");
+        return (web) -> web.ignoring()
+                .requestMatchers("/css/**", "/api/**")
+                .requestMatchers(antMatcher("/h2/**")); // https://stackoverflow.com/questions/74680244/h2-database-console-not-opening-with-spring-security;
     }
 
     @Bean // Configure security (authorization) for all URLs for which it is enabled
