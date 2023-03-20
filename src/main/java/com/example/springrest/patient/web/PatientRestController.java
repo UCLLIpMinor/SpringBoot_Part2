@@ -6,6 +6,7 @@ import com.example.springrest.patient.domain.PatientService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +15,23 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestController
+@RestController // vs @Controller
 @RequestMapping("/api/patient")
 public class PatientRestController {
+
+    // GET           => @GetMapping
+    // POST          => @Postmapping
+    // UPDATE (PUT)  => @PutMapping
+    // DELETE        => @DeleteMapping
+
+    // URL (GET, UPDATE, DELETE)
+    //  @PathVariable -> /api/patient/delete/3
+    //  @RequestParam -> /api/patient/delete?id=3
+
+    // POST
+    //  @Valid
+    //  @RequestBody
+
 
     @Autowired
     private PatientService service;
